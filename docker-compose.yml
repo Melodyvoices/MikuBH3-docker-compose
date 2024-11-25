@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./MikuBH3-server
+      dockerfile: Dockerfile
+      args:
+        - DB_HOST=mongodb
+        - DB_PORT=27017
+    image: miku-server:1.x
+    container_name: miku-server
+    ports:
+      - "80:80"
+      - "16100:16100"
+    networks:
+      - miku-network
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: miku-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-data:/data/db
+    networks:
+      - miku-network
+    hostname: mongodb
+
+networks:
+  miku-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: <your path>
+      o: bind
